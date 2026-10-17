@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Burguesa Croche - arquivos locais
+**/venv/
+**/__pycache__/
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de configuração local
+.env
+**/.env
+
+# Sistema operacional
+Thumbs.db
+.DS_Store

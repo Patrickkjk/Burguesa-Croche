@@ -1,0 +1,652 @@
+/* ========================================
+   BURGUESA CROCHÊ — PAINEL ADMINISTRATIVO
+
+/* ========================================
+   BASE DO PAINEL
+======================================== */
+
+.admin-page {
+  background: #faf9f6;
+}
+
+.admin-page .header {
+  background: #ffffff;
+}
+
+.admin-page .header-main {
+  min-height: 90px;
+}
+
+.admin-header-label {
+  color: var(--gray);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.admin-main {
+  padding-top: 35px;
+  padding-bottom: 40px;
+}
+
+.admin-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.admin-intro h1 {
+  margin-bottom: 12px;
+  font-size: clamp(32px, 4vw, 48px);
+  letter-spacing: -1px;
+}
+
+.admin-intro .eyebrow {
+  margin-bottom: 12px;
+}
+
+.admin-intro p {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   ESTATÍSTICAS
+======================================== */
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.admin-stat-label {
+  color: var(--gray);
+  font-size: 12px;
+}
+
+.admin-stat-value {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+}
+
+/* ========================================
+   ESTRUTURA DOS PAINÉIS
+======================================== */
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.admin-panel {
+  min-width: 0;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.admin-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.admin-panel-heading h2 {
+  font-size: 27px;
+}
+
+.admin-panel-heading .eyebrow {
+  margin-bottom: 10px;
+  font-size: 9px;
+}
+
+.admin-panel-heading .button {
+  min-height: 38px;
+  padding: 9px 13px;
+  font-size: 11px;
+}
+
+.admin-editor-status {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  background: var(--yellow-light);
+  border-radius: 20px;
+  font-size: 10px;
+  text-align: center;
+}
+
+#editorSection {
+  scroll-margin-top: 110px;
+}
+
+/* ========================================
+   FORMULÁRIO
+======================================== */
+
+.admin-fieldset {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  margin: 0 0 25px;
+  padding: 22px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-fieldset legend {
+  padding: 0 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.admin-fieldset > .small {
+  margin: 0;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-page .field label {
+  color: #333333;
+  font-size: 12px;
+}
+
+.admin-page .field input,
+.admin-page .field select,
+.admin-page .field textarea {
+  min-height: 45px;
+  font-size: 13px;
+}
+
+.admin-page .field textarea {
+  resize: vertical;
+  min-height: 95px;
+  line-height: 1.7;
+}
+
+.admin-page .field .small {
+  font-size: 11px;
+}
+
+.admin-page input[type="file"] {
+  padding: 10px;
+  background: #fafafa;
+  line-height: 1.7;
+}
+
+.admin-page input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 10px;
+  background: var(--yellow);
+  color: var(--black);
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+  cursor: pointer;
+}
+
+.admin-checkbox input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #b69920;
+}
+
+.admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-form-message {
+  padding: 14px;
+  border: 1px solid #dedede;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.admin-form-message[data-type="error"] {
+  background: #fff2f0;
+  color: #8a241b;
+  border-color: #f0c5c0;
+}
+
+.admin-form-message[data-type="success"] {
+  background: #f1f8ef;
+  color: #345b2e;
+  border-color: #c7ddc0;
+}
+
+/* ========================================
+   FOTOS DO FORMULÁRIO
+======================================== */
+
+.admin-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-photo-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.admin-photo-card.is-cover {
+  border: 2px solid #b99b21;
+}
+
+.admin-photo-image {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f2eee6;
+}
+
+.admin-photo-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-photo-info {
+  padding: 10px;
+}
+
+.admin-photo-name {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gray);
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.admin-photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-small-button {
+  min-height: 32px;
+  padding: 7px 9px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #dedede;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.admin-small-button:not(:disabled):hover {
+  background: var(--yellow-light);
+}
+
+.admin-small-button.is-cover {
+  background: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.admin-small-button.danger {
+  color: #9c2e27;
+}
+
+.admin-small-button.danger:not(:disabled):hover {
+  background: #fff2f0;
+  border-color: #edc3be;
+}
+
+/* ========================================
+   VÍDEO DO FORMULÁRIO
+======================================== */
+
+.admin-video-preview {
+  overflow: hidden;
+  background: #f5f3ee;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.admin-video-preview video {
+  width: 100%;
+  max-height: 340px;
+  background: #111111;
+  object-fit: contain;
+}
+
+.admin-video-caption {
+  margin: 0;
+  padding: 12px;
+  color: var(--gray);
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   BUSCA E FILTROS DA LISTAGEM
+======================================== */
+
+.admin-list-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+/* ========================================
+   LISTAGEM DAS PEÇAS
+======================================== */
+
+.admin-products-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.admin-product-item {
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr);
+  gap: 15px;
+  padding: 13px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.admin-product-image {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #f2eee6;
+  border-radius: 5px;
+}
+
+.admin-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-image-fallback {
+  padding: 10px;
+  color: #80745b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.admin-product-info {
+  min-width: 0;
+}
+
+.admin-product-name {
+  margin: 0 0 7px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.admin-product-meta {
+  margin: 0 0 8px;
+  color: var(--gray);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.admin-product-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.admin-product-badge {
+  padding: 4px 7px;
+  background: #f1f1f1;
+  border-radius: 4px;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.admin-product-badge.published {
+  background: var(--yellow-light);
+  color: #66510d;
+}
+
+.admin-product-badge.hidden {
+  background: #eeeeee;
+  color: #666666;
+}
+
+.admin-product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-product-actions .admin-small-button {
+  padding-inline: 12px;
+  font-size: 11px;
+}
+
+.admin-list-empty {
+  padding: 35px 20px;
+  background: #fafafa;
+  color: var(--gray);
+  border: 1px dashed #dddddd;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+/* ========================================
+   RODAPÉ
+======================================== */
+
+.admin-footer {
+  margin-top: 0;
+  padding: 20px 0;
+  background: #ffffff;
+}
+
+.admin-footer p {
+  margin: 0;
+}
+
+/* ========================================
+   RESPONSIVIDADE — ATÉ 1100px
+======================================== */
+
+@media (max-width: 1100px) {
+  .admin-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: 18px;
+  }
+
+  .admin-panel {
+    padding: 20px;
+  }
+
+  .admin-media-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-panel-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+/* ========================================
+   RESPONSIVIDADE — ATÉ 850px
+======================================== */
+
+@media (max-width: 850px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-media-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-header-label {
+    display: none;
+  }
+}
+
+/* ========================================
+   RESPONSIVIDADE — ATÉ 600px
+======================================== */
+
+@media (max-width: 600px) {
+  .admin-page .header-main {
+    min-height: 80px;
+  }
+
+  .admin-page .header-main > .button {
+    min-height: 40px;
+    padding: 10px 13px;
+    font-size: 11px;
+  }
+
+  .admin-main {
+    padding-top: 25px;
+  }
+
+  .admin-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .admin-intro h1 {
+    font-size: 35px;
+  }
+
+  .admin-stats {
+    gap: 9px;
+  }
+
+  .admin-stat {
+    gap: 10px;
+    padding: 15px 12px;
+  }
+
+  .admin-stat-label {
+    font-size: 10px;
+  }
+
+  .admin-stat-value {
+    font-size: 28px;
+  }
+
+  .admin-panel {
+    padding: 18px;
+  }
+
+  .admin-panel-heading h2 {
+    font-size: 25px;
+  }
+
+  .admin-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-media-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-list-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-form-actions {
+    flex-direction: column;
+  }
+
+  .admin-form-actions .button {
+    width: 100%;
+  }
+
+  .admin-product-item {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    padding: 11px;
+  }
+
+  .admin-product-name {
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   RESPONSIVIDADE — ATÉ 360px
+======================================== */
+
+@media (max-width: 360px) {
+  .admin-panel {
+    padding: 14px;
+  }
+
+  .admin-stat {
+    padding: 13px 9px;
+  }
+
+  .admin-stat-label {
+    font-size: 9px;
+  }
+
+  .admin-product-item {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .admin-product-actions {
+    flex-direction: column;
+  }
+}

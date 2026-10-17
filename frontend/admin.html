@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#f9db5c">
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Administração | Burguesa Crochê</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body class="admin-page">
+  <!-- CABEÇALHO -->
+  <header class="header">
+    <div class="container header-main">
+      <a
+        href="index.html"
+        class="brand"
+        aria-label="Abrir catálogo da Burguesa Crochê"
+      >
+        <span class="brand-name">Burguesa</span>
+        <span class="brand-sub">crochê</span>
+      </a>
+
+      <span class="admin-header-label">
+        Painel de peças
+      </span>
+
+      <a
+        href="index.html"
+        class="button button-outline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Ver catálogo ↗
+      </a>
+    </div>
+  </header>
+
+  <main class="container admin-main">
+    <!-- APRESENTAÇÃO -->
+    <section class="admin-intro" aria-labelledby="adminTitle">
+      <div>
+        <span class="eyebrow">Burguesa Crochê · administração</span>
+
+        <h1 id="adminTitle">Seu ateliê digital.</h1>
+
+        <p class="small">
+          Cadastre peças, organize as fotos e mantenha
+          as informações do catálogo atualizadas.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="button"
+        id="newProductButton"
+      >
+        + Nova peça
+      </button>
+    </section>
+
+    <!-- RESUMO -->
+    <section class="admin-stats" aria-label="Resumo do catálogo">
+      <div class="admin-stat">
+        <span class="admin-stat-label">Total de peças</span>
+        <span class="admin-stat-value" id="totalProducts">—</span>
+      </div>
+
+      <div class="admin-stat">
+        <span class="admin-stat-label">Publicadas</span>
+        <span class="admin-stat-value" id="publishedProducts">—</span>
+      </div>
+
+      <div class="admin-stat">
+        <span class="admin-stat-label">Ocultas</span>
+        <span class="admin-stat-value" id="hiddenProducts">—</span>
+      </div>
+    </section>
+
+    <div class="admin-layout">
+      <!-- FORMULÁRIO -->
+      <section
+        class="admin-panel"
+        id="editorSection"
+        aria-labelledby="editorTitle"
+      >
+        <div class="admin-panel-heading">
+          <div>
+            <span class="eyebrow">Informações da peça</span>
+            <h2 id="editorTitle">Cadastrar peça</h2>
+          </div>
+
+          <span class="admin-editor-status" id="editorStatus">
+            Novo cadastro
+          </span>
+        </div>
+
+        <form id="productForm">
+          <!-- ID VAZIO = NOVA PEÇA -->
+          <input type="hidden" id="productId" name="id">
+
+          <!-- INFORMAÇÕES PRINCIPAIS -->
+          <fieldset class="admin-fieldset">
+            <legend>Informações principais</legend>
+
+            <div class="field">
+              <label for="productName">Nome da peça *</label>
+
+              <input
+                type="text"
+                id="productName"
+                name="name"
+                placeholder="Ex.: Bolsa Margarida"
+                maxlength="120"
+                required
+              >
+            </div>
+
+            <div class="admin-form-row">
+              <div class="field">
+                <label for="productCategory">Categoria *</label>
+
+                <select
+                  id="productCategory"
+                  name="category"
+                  required
+                >
+                  <option value="">Selecione</option>
+                  <option value="Top">Top</option>
+                  <option value="Short">Short</option>
+                  <option value="Calça">Calça</option>
+                  <option value="Saia">Saia</option>
+                  <option value="Vestido">Vestido</option>
+                  <option value="Conjunto">Conjunto</option>
+                  <option value="Bolsa">Bolsa</option>
+                  <option value="Chapéu">Chapéu</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="productPrice">Valor em reais</label>
+
+                <input
+                  type="number"
+                  id="productPrice"
+                  name="price"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="Ex.: 149,90"
+                  aria-describedby="priceHelp"
+                >
+
+                <span class="small" id="priceHelp">
+                  Deixe vazio para mostrar “Consulte o valor”.
+                </span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="productDescription">Descrição</label>
+
+              <textarea
+                id="productDescription"
+                name="description"
+                rows="5"
+                placeholder="Apresente a peça, seu estilo e os detalhes que deseja destacar."
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label for="productMaterial">
+                Material e composição
+              </label>
+
+              <textarea
+                id="productMaterial"
+                name="material"
+                rows="3"
+                placeholder="Informe o fio, a composição, o acabamento e a presença de forro, quando houver."
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <!-- FOTOS -->
+          <fieldset class="admin-fieldset">
+            <legend>Fotos da peça</legend>
+
+            <p class="small" id="photosHelp">
+              Selecione uma ou mais fotos.
+              Depois você poderá escolher a capa e remover imagens.
+              Ao editar uma peça, mantenha as fotos que deseja conservar.
+            </p>
+
+            <div class="field">
+              <label for="productPhotos">Adicionar fotos</label>
+
+              <input
+                type="file"
+                id="productPhotos"
+                name="photos"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                aria-describedby="photosHelp"
+              >
+            </div>
+
+            <!-- PREENCHIDO PELO ADMIN.JS -->
+            <div
+              class="admin-media-grid"
+              id="photosPreview"
+              aria-label="Fotos selecionadas"
+            ></div>
+
+            <p class="small" id="photosEmpty">
+              Nenhuma foto adicionada.
+            </p>
+          </fieldset>
+
+          <!-- VÍDEO -->
+          <fieldset class="admin-fieldset">
+            <legend>Vídeo da peça</legend>
+
+            <div class="field">
+              <label for="productVideo">Adicionar ou substituir vídeo</label>
+
+              <input
+                type="file"
+                id="productVideo"
+                name="video"
+                accept="video/mp4,video/webm"
+                aria-describedby="videoHelp"
+              >
+
+              <span class="small" id="videoHelp">
+                Vídeo opcional. Selecione um arquivo MP4 ou WebM.
+              </span>
+            </div>
+
+            <div
+              class="admin-video-preview"
+              id="videoPreview"
+              hidden
+            ></div>
+
+            <button
+              type="button"
+              class="button button-outline"
+              id="removeVideoButton"
+              hidden
+            >
+              Remover vídeo
+            </button>
+          </fieldset>
+
+          <!-- CORES E TAMANHOS -->
+          <fieldset class="admin-fieldset">
+            <legend>Cores e tamanhos</legend>
+
+            <div class="field">
+              <label for="productColors">Cores disponíveis</label>
+
+              <input
+                type="text"
+                id="productColors"
+                name="colors"
+                placeholder="Ex.: Cru, Preto, Amarelo"
+                aria-describedby="colorsHelp"
+              >
+
+              <span class="small" id="colorsHelp">
+                Separe as cores por vírgula.
+                Deixe vazio quando as opções precisarem ser consultadas.
+              </span>
+            </div>
+
+            <div class="field">
+              <label for="productSizes">Tamanhos disponíveis</label>
+
+              <input
+                type="text"
+                id="productSizes"
+                name="sizes"
+                placeholder="Ex.: P, M, G ou Único"
+                aria-describedby="sizesHelp"
+              >
+
+              <span class="small" id="sizesHelp">
+                Separe os tamanhos por vírgula.
+                Use “Único” quando essa informação estiver confirmada.
+              </span>
+            </div>
+          </fieldset>
+
+          <!-- DISPONIBILIDADE -->
+          <fieldset class="admin-fieldset">
+            <legend>Disponibilidade e produção</legend>
+
+            <div class="field">
+              <label for="productAvailability">
+                Disponibilidade geral
+              </label>
+
+              <select
+                id="productAvailability"
+                name="availability"
+              >
+                <option value="consult">
+                  Confirmar com a atendente
+                </option>
+
+                <option value="order">
+                  Sob encomenda
+                </option>
+
+                <option value="ready">
+                  Todas as opções cadastradas à pronta entrega
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="productProductionTime">
+                Prazo de produção
+              </label>
+
+              <input
+                type="text"
+                id="productProductionTime"
+                name="productionTime"
+                placeholder="Ex.: 10 a 15 dias úteis"
+                aria-describedby="productionHelp"
+              >
+
+              <span class="small" id="productionHelp">
+                Informe apenas o prazo real de produção.
+                O prazo de transporte é separado.
+              </span>
+            </div>
+
+            <div class="field">
+              <label for="productReady">
+                Combinações específicas à pronta entrega
+              </label>
+
+              <textarea
+                id="productReady"
+                name="ready"
+                rows="4"
+                placeholder="Amarelo|P&#10;Cru|M"
+                aria-describedby="readyHelp"
+                spellcheck="false"
+              ></textarea>
+
+              <span class="small" id="readyHelp">
+                Opcional. Escreva uma combinação por linha no formato
+                Cor|Tamanho, usando os mesmos nomes cadastrados acima.
+                Exemplo: Amarelo|P.
+                Essas combinações ficam à pronta entrega;
+                as demais seguem a disponibilidade geral.
+              </span>
+            </div>
+          </fieldset>
+
+          <!-- INFORMAÇÕES DA FOTO -->
+          <fieldset class="admin-fieldset">
+            <legend>Na foto</legend>
+
+            <div class="field">
+              <label for="productFit">
+                Tamanho e cor apresentados
+              </label>
+
+              <textarea
+                id="productFit"
+                name="fit"
+                rows="3"
+                placeholder="Ex.: A modelo veste tamanho P, na cor cru."
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <!-- MEDIDAS DA MODELO -->
+          <fieldset class="admin-fieldset">
+            <legend>Medidas da modelo</legend>
+
+            <p class="small">
+              Campos opcionais. Informe a unidade junto ao valor.
+              Para peças sem modelo, deixe em branco.
+            </p>
+
+            <div class="admin-form-row">
+              <div class="field">
+                <label for="modelHeight">Altura</label>
+
+                <input
+                  type="text"
+                  id="modelHeight"
+                  name="modelHeight"
+                  placeholder="Ex.: 1,67 m"
+                >
+              </div>
+
+              <div class="field">
+                <label for="modelBust">Busto</label>
+
+                <input
+                  type="text"
+                  id="modelBust"
+                  name="modelBust"
+                  placeholder="Ex.: 82 cm"
+                >
+              </div>
+            </div>
+
+            <div class="admin-form-row">
+              <div class="field">
+                <label for="modelWaist">Cintura</label>
+
+                <input
+                  type="text"
+                  id="modelWaist"
+                  name="modelWaist"
+                  placeholder="Ex.: 64 cm"
+                >
+              </div>
+
+              <div class="field">
+                <label for="modelHips">Quadril</label>
+
+                <input
+                  type="text"
+                  id="modelHips"
+                  name="modelHips"
+                  placeholder="Ex.: 94 cm"
+                >
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- MEDIDAS DA PEÇA -->
+          <fieldset class="admin-fieldset">
+            <legend>Medidas da peça</legend>
+
+            <div class="field">
+              <label for="productMeasurements">
+                Medidas por tamanho ou dimensões
+              </label>
+
+              <textarea
+                id="productMeasurements"
+                name="measurements"
+                rows="5"
+                placeholder="Informe as medidas reais. Para roupas, separe por tamanho. Para bolsas, informe largura, altura e outros detalhes relevantes."
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <!-- CUIDADOS -->
+          <fieldset class="admin-fieldset">
+            <legend>Cuidados com a peça</legend>
+
+            <div class="field">
+              <label for="productCare">
+                Orientações de conservação
+              </label>
+
+              <textarea
+                id="productCare"
+                name="care"
+                rows="5"
+                placeholder="Cadastre as orientações específicas de lavagem, secagem e armazenamento conforme os materiais da peça."
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <!-- PUBLICAÇÃO -->
+          <fieldset class="admin-fieldset">
+            <legend>Exibição no catálogo</legend>
+
+            <label class="admin-checkbox" for="productPublished">
+              <input
+                type="checkbox"
+                id="productPublished"
+                name="published"
+                checked
+              >
+
+              <span>Publicar esta peça no catálogo</span>
+            </label>
+
+            <p class="small">
+              Desmarque para manter a peça cadastrada,
+              mas escondida do catálogo.
+            </p>
+          </fieldset>
+
+          <!-- FEEDBACK DO FORMULÁRIO -->
+          <p
+            class="admin-form-message"
+            id="formMessage"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            hidden
+          ></p>
+
+          <!-- AÇÕES -->
+          <div class="admin-form-actions">
+            <!-- O ADMIN.JS HABILITARÁ O BOTÃO APÓS INICIALIZAR -->
+            <button
+              type="submit"
+              class="button"
+              id="saveProductButton"
+              disabled
+            >
+              Salvar peça
+            </button>
+
+            <button
+              type="button"
+              class="button button-outline"
+              id="cancelEditButton"
+            >
+              Limpar formulário
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- LISTAGEM DAS PEÇAS -->
+      <section
+        class="admin-panel"
+        aria-labelledby="productsListTitle"
+      >
+        <div class="admin-panel-heading">
+          <div>
+            <span class="eyebrow">Organize sua coleção</span>
+
+            <h2 id="productsListTitle">
+              Peças cadastradas
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            class="button button-outline"
+            id="refreshProductsButton"
+          >
+            Atualizar
+          </button>
+        </div>
+
+        <div class="admin-list-filters">
+          <div class="field">
+            <label for="adminSearch">Buscar peça</label>
+
+            <input
+              type="search"
+              id="adminSearch"
+              placeholder="Buscar por nome ou categoria..."
+            >
+          </div>
+
+          <div class="field">
+            <label for="adminVisibilityFilter">Exibição</label>
+
+            <select id="adminVisibilityFilter">
+              <option value="all">Todas</option>
+              <option value="published">Publicadas</option>
+              <option value="hidden">Ocultas</option>
+            </select>
+          </div>
+        </div>
+
+        <p
+          class="small"
+          id="adminResultCount"
+          aria-live="polite"
+        ></p>
+
+        <!-- PREENCHIDO PELO ADMIN.JS -->
+        <div
+          class="admin-products-list"
+          id="adminProductsList"
+          aria-label="Lista de peças cadastradas"
+        >
+          <p class="small">
+            A listagem será carregada pelo painel.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <noscript>
+      <p>
+        Ative o JavaScript para cadastrar, editar
+        e visualizar as peças neste painel.
+      </p>
+    </noscript>
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer class="admin-footer">
+    <div class="container">
+      <p class="small">
+        © <span id="adminYear"></span> Burguesa Crochê.
+        Painel local de desenvolvimento.
+      </p>
+    </div>
+  </footer>
+
+  <!-- MENSAGENS DE FEEDBACK -->
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  ></div>
+
+  <!-- MANTENHA ESTA ORDEM -->
+  <script src="config.js"></script>
+  <script src="produtos-iniciais.js"></script>
+  <script src="produtos-service.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
