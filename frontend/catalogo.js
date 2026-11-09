@@ -139,7 +139,7 @@
     try {
       const url = new URL(media.trim(), document.baseURI);
 
-      if (["http:", "https:", "file:"].includes(url.protocol)) {
+      if (["http:", "https:", "file:", "data:"].includes(url.protocol)) {
         return url.href;
       }
     } catch (error) {
@@ -264,6 +264,8 @@
     return {
       ...product,
 
+      views: product.views || 0,
+
       colors: Array.isArray(product.colors)
         ? product.colors
         : [],
@@ -297,6 +299,13 @@
     if (!/^\d{12,13}$/.test(phone)) {
       notify("O WhatsApp da loja ainda não foi configurado.");
       return;
+    }
+
+    // --- INTEGRAÇÃO GOOGLE ANALYTICS (GA4) ---
+    if (typeof gtag !== "undefined") {
+      gtag("event", "clique_whatsapp", {
+        "nome_peca": state.currentProduct ? state.currentProduct.name : "Contato Geral"
+      });
     }
 
     const text =
@@ -1004,6 +1013,21 @@
 
     if (!product) return;
 
+    // --- INCREMENTA VISUALIZAÇÕES PARA O TOP 5 DO ADMIN ---
+    product.views = (product.views || 0) + 1;
+    // if (typeof ProdutosService !== "undefined" && ProdutosService.salvarProduto) {
+    //   ProdutosService.salvarProduto(product).catch(() => {});
+    // }
+
+    // --- DISPARA EVENTO NO GOOGLE ANALYTICS (GA4) ---
+    if (typeof gtag !== "undefined") {
+      gtag("event", "ver_produto", {
+        "nome_peca": product.name,
+        "categoria": product.category,
+        "preco": product.price || 0
+      });
+    }
+
     state.previousFocus = document.activeElement;
     state.currentProduct = product;
     state.selectedColor = "";
@@ -1560,9 +1584,6 @@
 
   /* ========================================
      CONSULTA DE ENVIO
-
-     Não realiza cotação automática.
-     Apenas prepara a mensagem de atendimento.
   ======================================== */
 
   function resetShipping() {
@@ -1571,57 +1592,103 @@
     if (!output) return;
 
     output.innerHTML = `
-      <span class="demo-badge">
-        CONSULTA PELO ATENDIMENTO
-      </span>
-
-      <br>
-
-      Informe o CEP para preparar uma mensagem à atendente.
-      Esta versão não calcula frete nem valida o endereço.
+      Informe o CEP para ver uma estimativa de envio
+      pelos Correios.
     `;
   }
 
-  function prepareShipping(event) {
-    event.preventDefault();
+  async function cotarFrete(produtoId, cep) {
+    let resposta;
 
-    const cep = $("#shippingCep").value
-      .replace(/\D/g, "");
-
-    const output = $("#shippingOutput");
-
-    if (!/^\d{8}$/.test(cep)) {
-      output.textContent =
-        "Digite um CEP com 8 números.";
-
-      return;
+    try {
+      resposta = await fetch(`${CONFIG.apiUrl}/frete/cotar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          produto_id: Number(produtoId),
+          cep_destino: cep
+        })
+      });
+    } catch (error) {
+      return {
+        erro: "Não foi possível consultar o frete agora."
+      };
     }
 
-    if (!requiredOptionsSelected()) return;
+    const dados = await resposta.json().catch(() => ({}));
 
-    const formatted =
-      `${cep.slice(0, 5)}-${cep.slice(5)}`;
+    if (!resposta.ok) {
+      return {
+        erro: typeof dados.detail === "string"
+          ? dados.detail
+          : "Não foi possível calcular o frete para este CEP."
+      };
+    }
+
+    return dados;
+  }
+
+  function renderShippingResult(dados, formattedCep) {
+    const output = $("#shippingOutput");
+
+    if (!output) return;
+
+    let html = "";
+
+    if (dados.erro) {
+      html = `
+        <p>${escapeHTML(dados.erro)}</p>
+        <p>Consulte o valor e o prazo com a atendente.</p>
+      `;
+    } else if (!dados.opcoes.length) {
+      html = `<p>${escapeHTML(dados.mensagem)}</p>`;
+    } else {
+      const items = dados.opcoes.map(opcao => {
+            const valor = opcao.valor.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        });
+
+        const prazo = opcao.prazo_transporte
+          ? ` · ${opcao.prazo_transporte} dia(s) úteis`
+          : "";
+
+        return `
+          <li>
+            ${escapeHTML(opcao.servico)}:
+            <strong>${escapeHTML(valor)}</strong>${escapeHTML(prazo)}
+          </li>
+        `;
+      }).join("");
+
+      const producao = dados.prazo_producao
+        ? `<p>Prazo de produção: ${escapeHTML(dados.prazo_producao)}.</p>`
+        : "";
+
+      html = `
+        ${dados.teste ? `
+          <span class="demo-badge">SIMULAÇÃO DE TESTE</span><br>
+        ` : ""}
+
+        <p>CEP: ${escapeHTML(formattedCep)}</p>
+
+        <ul>${items}</ul>
+
+        ${producao}
+
+        <p class="small">${escapeHTML(dados.aviso)}</p>
+      `;
+    }
 
     output.innerHTML = `
-      <span class="demo-badge">
-        SEM COTAÇÃO AUTOMÁTICA
-      </span>
-
-      <br>
-
-      CEP informado: ${formatted}.
-
-      <br>
-
-      A existência do CEP não foi verificada.
-      Solicite o valor e o prazo de envio à atendente.
+      ${html}
 
       <button
         class="button button-outline full"
         id="requestShipping"
         type="button"
       >
-        Consultar envio pelo WhatsApp ↗
+        Confirmar envio pelo WhatsApp ↗
       </button>
     `;
 
@@ -1629,11 +1696,65 @@
       contact(
         productMessage() +
         "\n\n" +
-        `Meu CEP de destino é ${formatted}.\n` +
-        "Pode informar o valor do frete, o prazo de envio " +
+        `Meu CEP de destino é ${formattedCep}.\n` +
+        "Pode confirmar o valor do frete, o prazo de envio " +
         "e, se necessário, o prazo de produção?"
       );
     });
+  }
+
+  async function prepareShipping(event) {
+    event.preventDefault();
+
+    const product = state.currentProduct;
+
+    if (!product) return;
+
+    const cep = $("#shippingCep").value.replace(/\D/g, "");
+    const output = $("#shippingOutput");
+    const button = event.currentTarget.querySelector(
+      'button[type="submit"]'
+    );
+
+    if (!/^\d{8}$/.test(cep)) {
+      output.textContent = "Digite um CEP com 8 números.";
+      return;
+    }
+
+    const formatted = `${cep.slice(0, 5)}-${cep.slice(5)}`;
+
+    button.disabled = true;
+    button.textContent = "Consultando...";
+    output.textContent = "Calculando o envio...";
+
+        let dados;
+
+    try {
+      dados = await cotarFrete(product.id, cep);
+    } catch (error) {
+      dados = { erro: "Não foi possível consultar o frete agora." };
+    } finally {
+      button.disabled = false;
+      button.textContent = "Consultar";
+    }
+
+    // Ignora a resposta se a pessoa fechou a peça,
+    // abriu outra ou mudou o CEP enquanto esperava.
+    if (
+      state.currentProduct !== product ||
+      !output.isConnected ||
+      $("#shippingCep").value.replace(/\D/g, "") !== cep
+    ) {
+      return;
+    }
+
+        try {
+      renderShippingResult(dados, formatted);
+    } catch (error) {
+      console.error("Erro ao exibir o frete:", error);
+      output.textContent =
+        "Não foi possível exibir o frete. Consulte a atendente.";
+    }
   }
 
   /* ========================================
@@ -1803,6 +1924,7 @@
       }
 
       if (openButton) {
+        event.preventDefault();
         openProduct(
           Number(openButton.dataset.open)
         );

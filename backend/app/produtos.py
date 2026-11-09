@@ -1,9 +1,10 @@
+import json
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from app.database import conectar
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
-
 
 
 class ProdutoCriacao(BaseModel):
@@ -23,33 +24,62 @@ class ProdutoCriacao(BaseModel):
     medidas_peca: str = ""
     informacoes_tamanho: str = ""
     video: str = ""
+    fotos: list[str] = []
     cores: list[str] = []
     tamanhos: list[str] = []
     combinacoes_pronta_entrega: list[str] = []
     cuidados: str = ""
 
+    # Dados da EMBALAGEM para o cálculo do frete (opcionais)
+    peso_envio_kg: float | None = Field(default=None, gt=0, le=30)
+    altura_envio_cm: float | None = Field(default=None, gt=0, le=105)
+    largura_envio_cm: float | None = Field(default=None, gt=0, le=105)
+    comprimento_envio_cm: float | None = Field(default=None, gt=0, le=105)
 
-class ProdutoAtualizacao(BaseModel):
-    nome: str = Field(min_length=1, max_length=200)
-    categoria: str = Field(min_length=1, max_length=100)
-    preco: float = Field(ge=0)
-    descricao: str = ""
-    material: str = ""
-    disponivel: bool = True
-    publicado: bool = False
 
-    prazo_producao: str = ""
-    altura_modelo: str = ""
-    busto_modelo: str = ""
-    cintura_modelo: str = ""
-    quadril_modelo: str = ""
-    medidas_peca: str = ""
-    informacoes_tamanho: str = ""
-    video: str = ""
-    cores: list[str] = []
-    tamanhos: list[str] = []
-    combinacoes_pronta_entrega: list[str] = []
-    cuidados: str = ""
+class ProdutoAtualizacao(ProdutoCriacao):
+    pass
+
+
+COLUNAS = [
+    "nome", "categoria", "preco", "descricao", "material",
+    "disponivel", "publicado", "prazo_producao",
+    "altura_modelo", "busto_modelo", "cintura_modelo",
+    "quadril_modelo", "medidas_peca", "informacoes_tamanho",
+    "video", "fotos", "cores", "tamanhos", "combinacoes_pronta_entrega",
+    "cuidados",
+    "peso_envio_kg", "altura_envio_cm",
+    "largura_envio_cm", "comprimento_envio_cm",
+]
+
+
+def valores_do_produto(produto):
+    return (
+        produto.nome.strip(),
+        produto.categoria.strip(),
+        produto.preco,
+        produto.descricao,
+        produto.material,
+        int(produto.disponivel),
+        int(produto.publicado),
+        produto.prazo_producao,
+        produto.altura_modelo,
+        produto.busto_modelo,
+        produto.cintura_modelo,
+        produto.quadril_modelo,
+        produto.medidas_peca,
+        produto.informacoes_tamanho,
+        produto.video,
+        json.dumps(produto.fotos, ensure_ascii=False),
+        json.dumps(produto.cores, ensure_ascii=False),
+        json.dumps(produto.tamanhos, ensure_ascii=False),
+        json.dumps(produto.combinacoes_pronta_entrega, ensure_ascii=False),
+        produto.cuidados,
+        produto.peso_envio_kg,
+        produto.altura_envio_cm,
+        produto.largura_envio_cm,
+        produto.comprimento_envio_cm,
+    )
 
 
 @router.get("/")
@@ -94,47 +124,13 @@ def cadastrar_produto(produto: ProdutoCriacao):
     conexao = conectar()
 
     try:
-        
-       
-        cursor = conexao.execute(
-            """
-            INSERT INTO produtos (
-                nome, categoria, preco, descricao, material,
-                disponivel, publicado, prazo_producao,
-                altura_modelo, busto_modelo, cintura_modelo,
-                quadril_modelo, medidas_peca,
-                informacoes_tamanho, video,
-                cores, tamanhos, combinacoes_pronta_entrega, cuidados
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?)
-            """,
-            (
-                produto.nome.strip(),
-                produto.categoria.strip(),
-                produto.preco,
-                produto.descricao,
-                produto.material,
-                int(produto.disponivel),
-                int(produto.publicado),
-                produto.prazo_producao,
-                produto.altura_modelo,
-                produto.busto_modelo,
-                produto.cintura_modelo,
-                produto.quadril_modelo,
-                produto.medidas_peca,
-                produto.informacoes_tamanho,
-                produto.video,
-                __import__("json").dumps(produto.cores, ensure_ascii=False),
-                __import__("json").dumps(produto.tamanhos, ensure_ascii=False),
-                __import__("json").dumps(
-                    produto.combinacoes_pronta_entrega,
-                    ensure_ascii=False,
-                ),
-                produto.cuidados,
-            ),
-        )
+        colunas_sql = ", ".join(COLUNAS)
+        marcadores = ", ".join("?" for _ in COLUNAS)
 
+        cursor = conexao.execute(
+            f"INSERT INTO produtos ({colunas_sql}) VALUES ({marcadores})",
+            valores_do_produto(produto),
+        )
 
         conexao.commit()
 
@@ -172,58 +168,16 @@ def atualizar_produto(
                 detail="Produto não encontrado",
             )
 
-        
-        
+        atribuicoes = ", ".join(f"{coluna} = ?" for coluna in COLUNAS)
+
         conexao.execute(
-            """
+            f"""
             UPDATE produtos
-            SET nome = ?,
-                categoria = ?,
-                preco = ?,
-                descricao = ?,
-                material = ?,
-                disponivel = ?,
-                publicado = ?,
-                prazo_producao = ?,
-                altura_modelo = ?,
-                busto_modelo = ?,
-                cintura_modelo = ?,
-                quadril_modelo = ?,
-                medidas_peca = ?,
-                informacoes_tamanho = ?,
-                video = ?,
-                cores = ?,
-                tamanhos = ?,
-                combinacoes_pronta_entrega = ?,
-                cuidados = ?,
+            SET {atribuicoes},
                 atualizado_em = CURRENT_TIMESTAMP
             WHERE id = ?
             """,
-            (
-                produto.nome.strip(),
-                produto.categoria.strip(),
-                produto.preco,
-                produto.descricao,
-                produto.material,
-                int(produto.disponivel),
-                int(produto.publicado),
-                produto.prazo_producao,
-                produto.altura_modelo,
-                produto.busto_modelo,
-                produto.cintura_modelo,
-                produto.quadril_modelo,
-                produto.medidas_peca,
-                produto.informacoes_tamanho,
-                produto.video,
-                __import__("json").dumps(produto.cores, ensure_ascii=False),
-                __import__("json").dumps(produto.tamanhos, ensure_ascii=False),
-                __import__("json").dumps(
-                    produto.combinacoes_pronta_entrega,
-                    ensure_ascii=False,
-                ),
-                produto.cuidados,
-                produto_id,
-            ),
+            (*valores_do_produto(produto), produto_id),
         )
 
         conexao.commit()

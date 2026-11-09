@@ -78,10 +78,17 @@ def criar_tabelas():
         }
 
         novas_colunas = {
-            "cores": "TEXT NOT NULL DEFAULT '[]'",
-            "tamanhos": "TEXT NOT NULL DEFAULT '[]'",
-            "combinacoes_pronta_entrega": "TEXT NOT NULL DEFAULT '[]'",
-            "cuidados": "TEXT NOT NULL DEFAULT ''",
+    "fotos": "TEXT NOT NULL DEFAULT '[]'",
+    "cores": "TEXT NOT NULL DEFAULT '[]'",
+    "tamanhos": "TEXT NOT NULL DEFAULT '[]'",
+    "combinacoes_pronta_entrega": "TEXT NOT NULL DEFAULT '[]'",
+    "cuidados": "TEXT NOT NULL DEFAULT ''",
+
+    "peso_envio_kg": "REAL CHECK (peso_envio_kg > 0)",
+    "altura_envio_cm": "REAL CHECK (altura_envio_cm > 0)",
+    "largura_envio_cm": "REAL CHECK (largura_envio_cm > 0)",
+    "comprimento_envio_cm": "REAL CHECK (comprimento_envio_cm > 0)",
+
         }
 
         for nome, definicao in novas_colunas.items():

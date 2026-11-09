@@ -231,3 +231,21 @@ __marimo__/
 # Sistema operacional
 Thumbs.db
 .DS_Store
+
+# Configurações e credenciais locais
+.env
+.env.*
+
+# Permite compartilhar somente o modelo sem credenciais
+!.env.example
+
+# Arquivos auxiliares do SQLite
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm

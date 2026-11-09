@@ -21,6 +21,21 @@ const ProdutosService = (() => {
       (typeof Blob !== "undefined" && valor instanceof Blob)
     );
   }
+    function numeroOuNulo(valor) {
+    if (valor === null || valor === undefined || valor === "") {
+      return null;
+    }
+
+    const numero = Number(valor);
+
+    if (!Number.isFinite(numero) || numero <= 0) {
+      throw new Error(
+        "Peso e medidas de envio devem ser maiores que zero."
+      );
+    }
+
+    return numero;
+  }
 
   function normalizarProduto(produto) {
     if (!produto || typeof produto !== "object") {
@@ -59,6 +74,7 @@ const ProdutosService = (() => {
     }
 
     const model = produto.modelMeasurements || {};
+        const envio = produto.shipping || {};
 
     return {
       ...produto,
@@ -98,6 +114,13 @@ const ProdutosService = (() => {
 
       measurements: String(produto.measurements || "").trim(),
       care: String(produto.care || "").trim(),
+            
+      shipping: {
+        weight: numeroOuNulo(envio.weight),
+        height: numeroOuNulo(envio.height),
+        width: numeroOuNulo(envio.width),
+        length: numeroOuNulo(envio.length)
+      },
 
       published: produto.published !== false,
 
@@ -144,7 +167,7 @@ const ProdutosService = (() => {
       productionTime: produto.prazo_producao || "",
       fit: produto.caimento || "",
 
-      photos: Array.isArray(produto.fotos) ? produto.fotos : [],
+      photos: converterLista(produto.fotos),
       video: produto.video || "",
 
       colors: converterLista(produto.cores),
@@ -164,7 +187,12 @@ const ProdutosService = (() => {
 
       measurements: produto.medidas_peca || "",
       care: produto.cuidados || "",
-
+          shipping: {
+        weight: produto.peso_envio_kg ?? "",
+        height: produto.altura_envio_cm ?? "",
+        width: produto.largura_envio_cm ?? "",
+        length: produto.comprimento_envio_cm ?? ""
+      },
       published: Boolean(produto.publicado),
 
       createdAt: produto.criado_em || "",
@@ -194,8 +222,19 @@ const ProdutosService = (() => {
       dados.id !== null &&
       dados.id !== "";
 
-    
- 
+    // CONVERSÃO: Transforma os arquivos de imagem em texto Base64
+    const fotosBase64 = await Promise.all(
+      produto.photos.map(async (foto) => {
+        if (typeof foto === "string") return foto;
+        return new Promise((resolve, reject) => {
+          const leitor = new FileReader();
+          leitor.onload = () => resolve(leitor.result);
+          leitor.onerror = reject;
+          leitor.readAsDataURL(foto);
+        });
+      })
+    );
+
     const corpo = {
       nome: produto.name,
       categoria: produto.category,
@@ -214,12 +253,17 @@ const ProdutosService = (() => {
       informacoes_tamanho: produto.fit,
       video: typeof produto.video === "string" ? produto.video : "",
 
+      fotos: fotosBase64, 
+
       cores: produto.colors,
       tamanhos: produto.sizes,
       combinacoes_pronta_entrega: produto.ready,
-      cuidados: produto.care
+      cuidados: produto.care,
+      peso_envio_kg: produto.shipping.weight,
+      altura_envio_cm: produto.shipping.height,
+      largura_envio_cm: produto.shipping.width,
+      comprimento_envio_cm: produto.shipping.length
     };
-
 
     const url = editando
       ? `${API_URL}/produtos/${Number(dados.id)}`
@@ -235,7 +279,6 @@ const ProdutosService = (() => {
 
     if (!resposta.ok) {
       const erro = await resposta.text();
-
       throw new Error(
         `Erro ao ${editando ? "atualizar" : "cadastrar"} produto: ${erro}`
       );
